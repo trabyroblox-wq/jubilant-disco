@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Game Collection</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f1a;
+      color: #e0e0ff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #a78bfa;
+      margin-bottom: 2rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+    .game-card {
+      background: #1e1e38;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+    }
+    .game-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(167, 139, 250, 0.25);
+    }
+    .game-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-bottom: 2px solid #3a3a5c;
+    }
+    .game-info {
+      padding: 1.2rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .game-title {
+      margin: 0 0 0.6rem 0;
+      font-size: 1.25rem;
+      color: #c4b5fd;
+    }
+    .game-desc {
+      margin: 0 0 1rem 0;
+      font-size: 0.95rem;
+      color: #b0b0d0;
+      flex-grow: 1;
+    }
+    .play-button {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      align-self: flex-start;
+    }
+    .play-button:hover {
+      background: #9f7aea;
+    }
+    .error {
+      color: #ff6b6b;
+      text-align: center;
+      font-size: 1.1rem;
+      margin: 3rem 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>My Game Collection</h1>
+
+  <div class="container">
+    <div class="games-grid" id="gamesGrid"></div>
+  </div>
+
+  <script>
+    // ────────────────────────────────────────────────
+    // Change this line to point to your actual JSON file
+    const JSON_PATH = "games.json";
+    // ────────────────────────────────────────────────
+
+    const grid = document.getElementById("gamesGrid");
+
+    fetch(JSON_PATH)
+      .then(response => {
+        if (!response.ok) throw new Error("Could not load games.json");
+        return response.json();
+      })
+      .then(data => {
+        if (!data.games || !Array.isArray(data.games)) {
+          throw new Error("Invalid format — expected { games: [...] }");
+        }
+
+        grid.innerHTML = ""; // clear loading placeholder if any
+
+        data.games.forEach(game => {
+          const card = document.createElement("a");
+          card.href = game.url || "#";
+          card.target = "_blank";
+          card.rel = "noopener noreferrer";
+          card.className = "game-card";
+
+          const img = document.createElement("img");
+          img.src = game.image || "https://via.placeholder.com/300x160?text=No+Image";
+          img.alt = game.title || "Game image";
+          img.loading = "lazy";
+
+          const info = document.createElement("div");
+          info.className = "game-info";
+
+          const title = document.createElement("h2");
+          title.className = "game-title";
+          title.textContent = game.title || "Unnamed Game";
+
+          const desc = document.createElement("p");
+          desc.className = "game-desc";
+          desc.textContent = game.description || "";
+
+          const btn = document.createElement("button");
+          btn.className = "play-button";
+          btn.textContent = "Play →";
+
+          info.appendChild(title);
+          info.appendChild(desc);
+          info.appendChild(btn);
+
+          card.appendChild(img);
+          card.appendChild(info);
+
+          grid.appendChild(card);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        grid.innerHTML = `<div class="error">Error loading games: ${err.message}<br><small>Make sure games.json exists in the same folder.</small></div>`;
+      });
+  </script>
+
+</body>
+</html>
