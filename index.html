@@ -3,157 +3,249 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jubilant Disco</title>
+  <title>Game Vault</title>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f0f1a;
-      color: #e0e0ff;
+    :root {
+      --accent: #ff7b00;
+      --accent-dark: #d45e00;
+      --card-bg: rgba(28, 25, 45, 0.68);
+      --text-light: #f5e9d8;
+      --text-muted: #c9b29c;
+    }
+
+    * {
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h1 {
-      text-align: center;
-      color: #a78bfa;
-      margin-bottom: 2rem;
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0b14;
+      color: var(--text-light);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
     }
-    .container {
-      max-width: 1200px;
+
+    /* Background */
+    #particles-js {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 30% 70%, rgba(255, 123, 0, 0.14) 0%, transparent 60%),
+                  radial-gradient(circle at 70% 30%, rgba(180, 60, 0, 0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+      padding: 3.5rem 1.5rem 4rem;
+      max-width: 1400px;
       margin: 0 auto;
     }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(2.6rem, 7vw, 4.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #ff9e4d;
+      text-shadow: 0 0 30px rgba(255, 140, 66, 0.45);
+      margin-bottom: 3.5rem;
+    }
+
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.8rem;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
     }
+
     .game-card {
-      background: #1e1e38;
-      border-radius: 12px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px) saturate(140%);
+      border-radius: 20px;
       overflow: hidden;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255, 123, 0, 0.18);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,123,0,0.08) inset;
+      transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
+
     .game-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(167, 139, 250, 0.25);
+      transform: translateY(-14px) scale(1.035);
+      box-shadow: 0 28px 70px rgba(255, 90, 0, 0.32),
+                  0 0 0 2px rgba(255,140,66,0.25) inset;
+      border-color: rgba(255, 140, 66, 0.45);
     }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,140,66,0.08));
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .game-card:hover::before {
+      opacity: 1;
+    }
+
     .game-card img {
       width: 100%;
-      height: 160px;
+      height: 180px;
       object-fit: cover;
-      border-bottom: 2px solid #3a3a5c;
+      display: block;
+      border-bottom: 2px solid rgba(255,123,0,0.25);
     }
+
     .game-info {
-      padding: 1.2rem;
-      flex-grow: 1;
+      padding: 1.5rem 1.6rem 1.8rem;
+      flex: 1;
       display: flex;
       flex-direction: column;
     }
+
     .game-title {
-      margin: 0 0 0.6rem 0;
-      font-size: 1.25rem;
-      color: #c4b5fd;
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      color: #ffd4a3;
+      line-height: 1.2;
     }
+
     .game-desc {
-      margin: 0 0 1rem 0;
-      font-size: 0.95rem;
-      color: #b0b0d0;
-      flex-grow: 1;
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.3rem;
+      flex: 1;
     }
-    .play-button {
-      background: #7c3aed;
+
+    .play-btn {
+      background: linear-gradient(90deg, var(--accent), #ff9e4d);
       color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.9rem 1.5rem;
       border: none;
-      padding: 0.75rem 1.2rem;
-      border-radius: 8px;
-      font-weight: 600;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.2s;
       align-self: flex-start;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 20px rgba(255,123,0,0.45);
     }
-    .play-button:hover {
-      background: #9f7aea;
+
+    .play-btn:hover {
+      background: linear-gradient(90deg, #ff9e4d, #ffb370);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(255,140,66,0.6);
     }
-    .error {
-      color: #ff6b6b;
-      text-align: center;
-      font-size: 1.1rem;
-      margin: 3rem 1rem;
+
+    @media (max-width: 600px) {
+      .games-grid { gap: 1.6rem; }
+      .game-card img { height: 160px; }
     }
   </style>
 </head>
 <body>
 
-  <h1>My Game Collection</h1>
+  <div id="particles-js"></div>
+  <div class="overlay"></div>
 
-  <div class="container">
+  <main>
+    <h1>Game Vault</h1>
+
     <div class="games-grid" id="gamesGrid"></div>
-  </div>
+  </main>
 
+  <!-- Using particles.js for more interactive subtle background -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: { value: 50, density: { enable: true, value_area: 1000 } },
+        color: { value: ["#ff7b00", "#ff9e4d", "#ffb370", "#d45e00"] },
+        shape: { type: "circle" },
+        opacity: { value: 0.45, random: true, anim: { enable: true, speed: 1.2, opacity_min: 0.15 } },
+        size: { value: 3.2, random: true, anim: { enable: true, speed: 2, size_min: 0.4 } },
+        line_linked: {
+          enable: true,
+          distance: 140,
+          color: "#ff9e4d",
+          opacity: 0.22,
+          width: 1.1
+        },
+        move: {
+          enable: true,
+          speed: 1.1,
+          direction: "none",
+          random: true,
+          straight: false,
+          out_mode: "out",
+          bounce: false,
+          attract: { enable: false }
+        }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "grab" },
+          onclick: { enable: false },
+          resize: true
+        },
+        modes: {
+          grab: { distance: 180, line_linked: { opacity: 0.55 } }
+        }
+      },
+      retina_detect: true
+    });
+
     // ────────────────────────────────────────────────
-    // Change this line to point to your actual JSON file
     const JSON_PATH = "games.json";
     // ────────────────────────────────────────────────
 
     const grid = document.getElementById("gamesGrid");
 
     fetch(JSON_PATH)
-      .then(response => {
-        if (!response.ok) throw new Error("Could not load games.json");
-        return response.json();
-      })
+      .then(r => r.ok ? r.json() : Promise.reject("Failed to load games.json"))
       .then(data => {
-        if (!data.games || !Array.isArray(data.games)) {
-          throw new Error("Invalid format — expected { games: [...] }");
-        }
-
-        grid.innerHTML = ""; // clear loading placeholder if any
-
-        data.games.forEach(game => {
+        grid.innerHTML = "";
+        (data.games || []).forEach(game => {
           const card = document.createElement("a");
-          card.href = game.url || "#";
-          card.target = "_blank";
-          card.rel = "noopener noreferrer";
+          card.href = `play.html?url=${encodeURIComponent(game.url)}&title=${encodeURIComponent(game.title || "Game")}`;
           card.className = "game-card";
 
-          const img = document.createElement("img");
-          img.src = game.image || "https://via.placeholder.com/300x160?text=No+Image";
-          img.alt = game.title || "Game image";
-          img.loading = "lazy";
-
-          const info = document.createElement("div");
-          info.className = "game-info";
-
-          const title = document.createElement("h2");
-          title.className = "game-title";
-          title.textContent = game.title || "Unnamed Game";
-
-          const desc = document.createElement("p");
-          desc.className = "game-desc";
-          desc.textContent = game.description || "";
-
-          const btn = document.createElement("button");
-          btn.className = "play-button";
-          btn.textContent = "Play →";
-
-          info.appendChild(title);
-          info.appendChild(desc);
-          info.appendChild(btn);
-
-          card.appendChild(img);
-          card.appendChild(info);
+          card.innerHTML = `
+            <img src="${game.image || 'https://via.placeholder.com/300x180?text=Game'}" alt="${game.title || 'Game'}" loading="lazy">
+            <div class="game-info">
+              <h2 class="game-title">${game.title || "Unnamed Game"}</h2>
+              <p class="game-desc">${game.description || ""}</p>
+              <div class="play-btn">Play Now →</div>
+            </div>
+          `;
 
           grid.appendChild(card);
         });
       })
       .catch(err => {
-        console.error(err);
-        grid.innerHTML = `<div class="error">Error loading games: ${err.message}<br><small>Make sure games.json exists in the same folder.</small></div>`;
+        grid.innerHTML = `<div style="color:#ff6b6b; text-align:center; font-size:1.5rem; margin:6rem 1rem;">
+          ${err.message}<br><small>Make sure games.json is in the same folder</small>
+        </div>`;
       });
   </script>
 
